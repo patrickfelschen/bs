@@ -1,6 +1,3 @@
-#include <iostream>
-#include <unistd.h>
-
 /**************************************************************
 * MiniShell.cpp
 * Funktion:
@@ -17,16 +14,25 @@ Ausgabe aus.
 * -
 *************************************************************/
 
+#include "MiniShell.h"
+
 using namespace std;
 
-int main() {
-    int test;
+MiniShell::MiniShell() {
 
-    while(true) {
-        cout << get_current_dir_name() << ":";
-        cin >> test;
-        cout << to_string(test) << endl;
-    }
-    return 0;
 }
 
+MiniShell::~MiniShell() {
+
+}
+
+string MiniShell::getUserInput() {
+    string input;
+    string currentUser = string(getenv("USER"));
+    string currentDir = get_current_dir_name();
+
+    cout << currentUser << "@" << currentDir << "$ ";
+    cin >> input;
+
+    return input;
+}
