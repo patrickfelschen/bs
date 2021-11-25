@@ -7,7 +7,8 @@
 int main() {
     MiniShell miniShell;
 
-    miniShell.getUserInput();
+    miniShell.start();
+
 
     return 0;
 }
