@@ -1,14 +1,12 @@
 //
-// Created by pfelsche@id.hsos.de on 19.11.21.
+// Created by Patrick Felschen on 30.11.21.
 //
 
 #include "MiniShell.h"
 
-int main() {
+int main(int argc, char *argv[]){
     MiniShell miniShell;
-
-    miniShell.start();
-
-
+    miniShell.loop();
     return 0;
 }
+
