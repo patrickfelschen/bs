@@ -13,18 +13,16 @@
 using namespace std;
 
 class MiniShell {
-private:
-    char *line;
-    char **args;
 public:
     MiniShell();
     virtual ~MiniShell();
     void loop();
-    void readLine();
-    void splitLine();
-    void queryEnv();
-    void execute();
-    void launch();
+    char* readLine();
+    char** splitCommand(char* line);
+    void replaceEnv(char** commands);
+    void execute(char** commands);
+    void launch(char** commands);
+    void launchPipe();
 };
 
 
