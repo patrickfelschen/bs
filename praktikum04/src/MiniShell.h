@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <sys/wait.h>
+#include <cstring>
 
 using namespace std;
 
