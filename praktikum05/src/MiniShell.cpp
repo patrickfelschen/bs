@@ -14,7 +14,7 @@ void MiniShell::loop() {
     while (true) {
         char *user = getenv("USER");
         char dir[256];
-        getcwd(dir, sizeof(dir));
+        getcwd(dir, 256);
 
         cout << user << "@" << dir << "$ ";
 
@@ -126,8 +126,4 @@ void MiniShell::launch() {
             waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
-}
-
-void MiniShell::setPipeFlag() {
-
 }

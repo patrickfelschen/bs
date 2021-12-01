@@ -16,13 +16,11 @@ class MiniShell {
 private:
     char *line;
     char **args;
-    int pipeFlag;
 public:
     MiniShell();
     virtual ~MiniShell();
     void loop();
     void readLine();
-    void setPipeFlag();
     void splitLine();
     void queryEnv();
     void execute();
