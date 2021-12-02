@@ -10,6 +10,9 @@ MiniShell::MiniShell() {}
 
 MiniShell::~MiniShell() {}
 
+/***
+ *
+ */
 void MiniShell::loop() {
     while (true) {
         char *user = getenv("USER");
@@ -23,6 +26,10 @@ void MiniShell::loop() {
     }
 }
 
+/***
+ * Benutzereingaben werden eingelesen (maximal 1024 Zeichen).
+ * @return Eingegebene Zeile des Benutzers als Zeichenkette.
+ */
 char *MiniShell::readLine() {
     int bufsize = 1024;
     char *line = new char[bufsize];
@@ -30,7 +37,13 @@ char *MiniShell::readLine() {
 
     return line;
 }
-
+/***
+ * Teilt eine Zeile in einzelne Argumente auf und gibt diese zurueck.
+ * Jeweils bei einem Leerzeichen wird die Zeile unterteilt.
+ * (maximal 64 Argumente)
+ * @param line Eingabezeile, bspw. vom Benutzer
+ * @return Unterteilte Zeile (Argumente) als Array von Zeichenketten.
+ */
 char **MiniShell::splitArgs(char *line) {
     char sep[] = " ";
     int bufsize = 64;
@@ -53,6 +66,11 @@ char **MiniShell::splitArgs(char *line) {
     return args;
 }
 
+/***
+ * Teilt eine Zeile in einzelne (zwei) Pipes auf und gibt diese zurueck.
+ * @param line Eingegebene Zeile des Benutzers als Zeichenkette.
+ * @return Unterteilte Zeile (Pipes) als Array von Zeichenketten.
+ */
 char **MiniShell::splitPipe(char *line) {
     char sep[] = "|";
     int bufsize = 64;
@@ -73,6 +91,10 @@ char **MiniShell::splitPipe(char *line) {
     return pipes;
 }
 
+/***
+ *
+ * @param args
+ */
 void MiniShell::replaceEnv(char **args) {
     int position = 0;
     while (args[position] != nullptr) {
@@ -87,7 +109,10 @@ void MiniShell::replaceEnv(char **args) {
         position++;
     }
 }
-
+/***
+ *
+ * @param line
+ */
 void MiniShell::execute(char *line) {
     if (strstr(line, "|") != nullptr) {
 
@@ -126,16 +151,20 @@ void MiniShell::execute(char *line) {
     }
 }
 
+/***
+ *
+ * @param args
+ */
 void MiniShell::launch(char **args) {
     // Forking a child
     pid_t pid = fork();
 
     if (pid == -1) {
-        printf("\nFailed forking child..");
+        printf("Fork fehlgeschlagen!\n");
         return;
     } else if (pid == 0) {
         if (execvp(args[0], args) < 0) {
-            printf("\nCould not execute command..");
+            printf("Befehl konnte nicht ausgefuert werden!\n");
         }
         exit(0);
     } else {
@@ -145,18 +174,23 @@ void MiniShell::launch(char **args) {
     }
 }
 
+/***
+ *
+ * @param args1
+ * @param args2
+ */
 void MiniShell::launchPipe(char **args1, char **args2) {
     // 0 is read end, 1 is write end
     int pipefd[2];
     pid_t p1, p2;
 
     if (pipe(pipefd) < 0) {
-        printf("\nPipe could not be initialized");
+        printf("Pipe konnte nicht erstellt werden!\n");
         return;
     }
     p1 = fork();
     if (p1 < 0) {
-        printf("\nCould not fork");
+        printf("Fork fehlgeschlagen!\n");
         return;
     }
 
@@ -168,7 +202,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
         close(pipefd[1]);
 
         if (execvp(args1[0], args1) < 0) {
-            printf("\nCould not execute command 1..");
+            printf("Befehl 1 konnte nicht ausgefuert werden!\n");
             exit(0);
         }
     } else {
@@ -176,7 +210,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
         p2 = fork();
 
         if (p2 < 0) {
-            printf("\nCould not fork");
+            printf("Fork fehlgeschlagen\n");
             return;
         }
 
@@ -187,7 +221,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
             if (execvp(args2[0], args2) < 0) {
-                printf("\nCould not execute command 2..");
+                printf("Befehl 2 konnte nicht ausgefuert werden\n");
                 exit(0);
             }
         } else {
