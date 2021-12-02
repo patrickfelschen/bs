@@ -214,7 +214,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
         close(pipefd[1]); // Deskriptor schliessen um Terminierung zu kennzeichnen
 
         if (execvp(args1[0], args1) < 0) {
-            cerr << "Befehl 1 konnte nicht ausgefuert werden!" << endl;
+            cerr << "Befehl 1 konnte nicht ausgefuehrt werden!" << endl;
             exit(0);
         }
     } else {
@@ -232,7 +232,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
             dup2(pipefd[0], STDIN_FILENO); // Eingabe per dup2() in Deskriptor 0 umleiten
             close(pipefd[0]); // Deskriptor schliessen um Terminierung zu kennzeichnen
             if (execvp(args2[0], args2) < 0) {
-                cerr << "Befehl 2 konnte nicht ausgefuert werden" << endl;
+                cerr << "Befehl 2 konnte nicht ausgefuehrt werden" << endl;
                 exit(0);
             }
         } else {
