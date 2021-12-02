@@ -112,10 +112,12 @@ void MiniShell::launch() {
     int childStatus;
     if (pid == 0) {
         // Child process
+
         childStatus = execvp(args[0], args);
         if (childStatus < 0) {
             cout << "Fehlerhafte Eingabe!" << endl;
         }
+
         exit(0);
     } else if (pid < 0) {
         // Error forking
@@ -126,4 +128,8 @@ void MiniShell::launch() {
             waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
+}
+
+void MiniShell::launchPipe() {
+    cout << "Pipe" << endl;
 }

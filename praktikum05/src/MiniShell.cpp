@@ -115,8 +115,12 @@ void MiniShell::replaceEnv(char **args) {
     }
 }
 /**
- *
- * @param line
+ * Überprüft die uebergebene Zeichenekette auf das Pipe-Symbol "|".
+ * Ist dies vorhanden, wird der Input in zwei Pipes zerlegt und mit diesen launchPipe() aufgerufen.
+ * Ist kein Pipe-Symbol vorhanden, wird die Nutzereingabe in einzelne Argumente zerlegt.
+ * Die Argumente werden auf Built-In Kommandos geprueft, welche entsprechend ausgefuehrt werden.
+ * Beinhaltet die Eingabe kein Built-In Kommando werden die Argumente an die launch() Funktion uebergeben.
+ * @param line Eingegebene Zeile des Nutzers als Zeichenkette.
  */
 void MiniShell::execute(char *line) {
     if (strstr(line, "|") != nullptr) {
@@ -157,11 +161,13 @@ void MiniShell::execute(char *line) {
 }
 
 /**
- *
- * @param args
+ * Es wird ein Duplikat des Prozesses erstellt (Child)
+ * Ist das Erstellen erfolgreich (Rueckgabewert 0), wird mit dem uebergebenen Array ein Befehl ausgefuehrt.
+ * In args[0] befindet sich der auszufuehrende Befehl, args[n] (n > 0) beinhaltet die Argumente.
+ * @param args Pointer-Array mit Befehl und zugehörigen Argumenten
  */
 void MiniShell::launch(char **args) {
-    // Forking a child
+    // Neuer Kindprozess per fork() erzeugen
     pid_t pid = fork();
 
     if (pid == -1) {
@@ -173,19 +179,21 @@ void MiniShell::launch(char **args) {
         }
         exit(0);
     } else {
-        // waiting for child to terminate
+        // Elternprozess wartet auf Beendigung des Kindprozesses
         wait(nullptr);
         return;
     }
 }
 
 /**
- *
- * @param args1
- * @param args2
+ * Es wird eine Kommunikation zwischen zwei Prozessen ueber pipe() hergestellt.
+ * Die produzierte Ausgabe des ersten Kindprozesses wird als Eingabe für Kindprozess zwei verwendet.
+ * @param args1 Pointer Array mit Befehl und Argumenten links vom Pipe-Symbol
+ * @param args2 Pointer Array mit Befehl und Argumenten rechts vom Pipe-Symbol
  */
 void MiniShell::launchPipe(char **args1, char **args2) {
-    // 0 is read end, 1 is write end
+    // Deskriptor 0 = lesen
+    // Deskriptor 1 = schreiben
     int pipefd[2];
     pid_t p1, p2;
 
@@ -200,18 +208,17 @@ void MiniShell::launchPipe(char **args1, char **args2) {
     }
 
     if (p1 == 0) {
-        // Child 1 executing..
-        // It only needs to write at the write end
-        close(pipefd[0]);
-        dup2(pipefd[1], STDOUT_FILENO);
-        close(pipefd[1]);
+        // Kindprozess 1
+        close(pipefd[0]); // Nicht verwendeten Deskriptor schliessen
+        dup2(pipefd[1], STDOUT_FILENO); // Ausgabe per dup2() in Deskriptor 1 umleiten
+        close(pipefd[1]); // Deskriptor schliessen um Terminierung zu kennzeichnen
 
         if (execvp(args1[0], args1) < 0) {
             cerr << "Befehl 1 konnte nicht ausgefuert werden!" << endl;
             exit(0);
         }
     } else {
-        // Parent executing
+        // Elternprozess
         p2 = fork();
 
         if (p2 < 0) {
@@ -219,18 +226,17 @@ void MiniShell::launchPipe(char **args1, char **args2) {
             return;
         }
 
-        // Child 2 executing..
-        // It only needs to read at the read end
         if (p2 == 0) {
-            close(pipefd[1]);
-            dup2(pipefd[0], STDIN_FILENO);
-            close(pipefd[0]);
+            // Kindprozess 2
+            close(pipefd[1]); // Nicht verwendeten Deskriptor schliessen
+            dup2(pipefd[0], STDIN_FILENO); // Eingabe per dup2() in Deskriptor 0 umleiten
+            close(pipefd[0]); // Deskriptor schliessen um Terminierung zu kennzeichnen
             if (execvp(args2[0], args2) < 0) {
                 cerr << "Befehl 2 konnte nicht ausgefuert werden" << endl;
                 exit(0);
             }
         } else {
-            // parent executing, waiting for two children
+            // Warten auf Beendigung der Child-Prozesse
             wait(nullptr);
             return;
         }
