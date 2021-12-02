@@ -19,6 +19,7 @@ void MiniShell::loop() {
         cout << user << "@" << dir << "$ ";
 
         readLine();
+        splitPipe();
         splitLine();
         queryEnv();
         execute();
@@ -28,7 +29,6 @@ void MiniShell::loop() {
 void MiniShell::readLine() {
     int bufsize = 1024;
     line = new char[bufsize];
-
     cin.getline(line, bufsize);
 }
 
@@ -43,19 +43,34 @@ void MiniShell::splitLine() {
 
     while (token != nullptr) {
         args[position] = token;
-
         position++;
-
         token = strtok(nullptr, sep);
     }
 
     args[position] = nullptr;
 }
 
+void MiniShell::splitPipe() {
+    char sep[] = "|";
+    int bufsize = 64;
+    int position = 0;
+    pipes = new char *[bufsize];
+    char *token;
+
+    token = strtok(line, sep);
+
+    while (token != nullptr) {
+        pipes[position] = token;
+        position++;
+        token = strtok(nullptr, sep);
+    }
+
+    pipes[position] = nullptr;
+}
+
 void MiniShell::queryEnv() {
     int position = 0;
     while (args[position] != nullptr) {
-
         if (args[position][0] == '$') {
             char *env = getenv(args[position] + 1);
             if (env != nullptr) {
@@ -64,7 +79,6 @@ void MiniShell::queryEnv() {
                 cout << "Nicht gefunden!" << endl;
             }
         }
-
         position++;
     }
 }
