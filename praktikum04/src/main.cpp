@@ -1,6 +1,10 @@
-//
-// Created by Patrick Felschen on 30.11.21.
-//
+/**
+ * main.cpp
+ *
+ * Erstellt eine Instanz der MiniShell und fuehrt diese aus.
+ *
+ * Autor(en): Patrick Felschen, Julian Voss
+ */
 
 #include "MiniShell.h"
 
