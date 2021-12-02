@@ -13,8 +13,6 @@
 using namespace std;
 
 class MiniShell {
-private:
-    bool isPipe;
 public:
     MiniShell();
     virtual ~MiniShell();

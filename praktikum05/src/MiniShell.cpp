@@ -28,8 +28,6 @@ char *MiniShell::readLine() {
     char *line = new char[bufsize];
     cin.getline(line, bufsize);
 
-    isPipe = strstr(line, "|") != nullptr;
-
     return line;
 }
 
@@ -91,7 +89,7 @@ void MiniShell::replaceEnv(char **args) {
 }
 
 void MiniShell::execute(char *line) {
-    if (isPipe) {
+    if (strstr(line, "|") != nullptr) {
 
         char **pipes = splitPipe(line);
         char **args1 = splitArgs(pipes[0]);
@@ -132,8 +130,6 @@ void MiniShell::launch(char **args) {
     // Forking a child
     pid_t pid = fork();
 
-    int status;
-
     if (pid == -1) {
         printf("\nFailed forking child..");
         return;
@@ -144,7 +140,7 @@ void MiniShell::launch(char **args) {
         exit(0);
     } else {
         // waiting for child to terminate
-        waitpid(pid, &status, 0);
+        wait(nullptr);
         return;
     }
 }
@@ -153,9 +149,6 @@ void MiniShell::launchPipe(char **args1, char **args2) {
     // 0 is read end, 1 is write end
     int pipefd[2];
     pid_t p1, p2;
-
-    int statusP1;
-    int statusP2;
 
     if (pipe(pipefd) < 0) {
         printf("\nPipe could not be initialized");
@@ -199,8 +192,8 @@ void MiniShell::launchPipe(char **args1, char **args2) {
             }
         } else {
             // parent executing, waiting for two children
-            waitpid(p1, &statusP1, 0);
-            waitpid(p2, &statusP2, 0);
+            wait(nullptr);
+            return;
         }
     }
 
