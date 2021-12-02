@@ -175,7 +175,7 @@ void MiniShell::launch(char **args) {
         return;
     } else if (pid == 0) {
         if (execvp(args[0], args) < 0) {
-            cerr << "Befehl konnte nicht ausgefuert werden!" << endl;
+            cerr << "Befehl konnte nicht ausgefuehrt werden!" << endl;
         }
         exit(0);
     } else {
