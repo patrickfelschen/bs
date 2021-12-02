@@ -92,8 +92,8 @@ char **MiniShell::splitPipe(char *line) {
 }
 
 /***
- *
- * @param args
+ * Ersetzt die Variablen ($...) der uebergebenen Argumente.
+ * @param args Argumente mit ggf. Variablen
  */
 void MiniShell::replaceEnv(char **args) {
     int position = 0;
@@ -103,7 +103,7 @@ void MiniShell::replaceEnv(char **args) {
             if (env != nullptr) {
                 args[position] = env;
             } else {
-                cout << "Nicht gefunden!" << endl;
+                cerr << "Variable nicht gefunden! ";
             }
         }
         position++;
@@ -136,13 +136,13 @@ void MiniShell::execute(char *line) {
             if (env != nullptr) {
                 cout << env << endl;
             } else {
-                cout << "Nicht gefunden!" << endl;
+                cerr << "Variable nicht gefunden!" << endl;
             }
         } else if (strcmp(args[0], "export") == 0) {
             int err = putenv(args[1]);
 
             if (err != 0) {
-                cout << "Fehler beim setzen!" << endl;
+                cerr << "Fehler beim setzen!" << endl;
             }
         } else {
             launch(args);
@@ -160,11 +160,11 @@ void MiniShell::launch(char **args) {
     pid_t pid = fork();
 
     if (pid == -1) {
-        printf("Fork fehlgeschlagen!\n");
+        cerr << "Fork fehlgeschlagen!" << endl;
         return;
     } else if (pid == 0) {
         if (execvp(args[0], args) < 0) {
-            printf("Befehl konnte nicht ausgefuert werden!\n");
+            cerr << "Befehl konnte nicht ausgefuert werden!" << endl;
         }
         exit(0);
     } else {
@@ -185,12 +185,12 @@ void MiniShell::launchPipe(char **args1, char **args2) {
     pid_t p1, p2;
 
     if (pipe(pipefd) < 0) {
-        printf("Pipe konnte nicht erstellt werden!\n");
+        cerr << "Pipe konnte nicht erstellt werden!" << endl;
         return;
     }
     p1 = fork();
     if (p1 < 0) {
-        printf("Fork fehlgeschlagen!\n");
+        cerr << "Fork fehlgeschlagen!" << endl;
         return;
     }
 
@@ -202,7 +202,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
         close(pipefd[1]);
 
         if (execvp(args1[0], args1) < 0) {
-            printf("Befehl 1 konnte nicht ausgefuert werden!\n");
+            cerr << "Befehl 1 konnte nicht ausgefuert werden!" << endl;
             exit(0);
         }
     } else {
@@ -210,7 +210,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
         p2 = fork();
 
         if (p2 < 0) {
-            printf("Fork fehlgeschlagen\n");
+            cerr << "Fork fehlgeschlagen" << endl;
             return;
         }
 
@@ -221,7 +221,7 @@ void MiniShell::launchPipe(char **args1, char **args2) {
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
             if (execvp(args2[0], args2) < 0) {
-                printf("Befehl 2 konnte nicht ausgefuert werden\n");
+                cerr << "Befehl 2 konnte nicht ausgefuert werden" << endl;
                 exit(0);
             }
         } else {
