@@ -1,6 +1,11 @@
-//
-// Created by Patrick Felschen on 30.11.21.
-//
+/**
+ * MiniShell.cpp
+ *
+ * Implementierung einer Art mini Shell, welche Eingaben vom Benutzer
+ * einlesen kann, Prozesse ausfuehren kann und Variablen speichern kann.
+ *
+ * Autor(en): Patrick Felschen, Julian Voss
+ */
 
 #include "MiniShell.h"
 
@@ -10,8 +15,8 @@ MiniShell::MiniShell() {}
 
 MiniShell::~MiniShell() {}
 
-/***
- *
+/**
+ *  Schleife für die durchgehende Konsolen-Aufgabe.
  */
 void MiniShell::loop() {
     while (true) {
@@ -26,7 +31,7 @@ void MiniShell::loop() {
     }
 }
 
-/***
+/**
  * Benutzereingaben werden eingelesen (maximal 1024 Zeichen).
  * @return Eingegebene Zeile des Benutzers als Zeichenkette.
  */
@@ -37,7 +42,7 @@ char *MiniShell::readLine() {
 
     return line;
 }
-/***
+/**
  * Teilt eine Zeile in einzelne Argumente auf und gibt diese zurueck.
  * Jeweils bei einem Leerzeichen wird die Zeile unterteilt.
  * (maximal 64 Argumente)
@@ -66,7 +71,7 @@ char **MiniShell::splitArgs(char *line) {
     return args;
 }
 
-/***
+/**
  * Teilt eine Zeile in einzelne (zwei) Pipes auf und gibt diese zurueck.
  * @param line Eingegebene Zeile des Benutzers als Zeichenkette.
  * @return Unterteilte Zeile (Pipes) als Array von Zeichenketten.
@@ -91,7 +96,7 @@ char **MiniShell::splitPipe(char *line) {
     return pipes;
 }
 
-/***
+/**
  * Ersetzt die Variablen ($...) der uebergebenen Argumente.
  * @param args Argumente mit ggf. Variablen
  */
@@ -109,7 +114,7 @@ void MiniShell::replaceEnv(char **args) {
         position++;
     }
 }
-/***
+/**
  *
  * @param line
  */
@@ -151,7 +156,7 @@ void MiniShell::execute(char *line) {
     }
 }
 
-/***
+/**
  *
  * @param args
  */
@@ -174,7 +179,7 @@ void MiniShell::launch(char **args) {
     }
 }
 
-/***
+/**
  *
  * @param args1
  * @param args2

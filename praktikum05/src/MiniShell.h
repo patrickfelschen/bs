@@ -1,6 +1,11 @@
-//
-// Created by Patrick Felschen on 30.11.21.
-//
+/**
+ * MiniShell.h
+ *
+ * Implementierung einer Art mini Shell, welche Eingaben vom Benutzer
+ * einlesen kann, Prozesse ausfuehren kann und Variablen speichern kann.
+ *
+ * Autor(en): Patrick Felschen, Julian Voss
+ */
 
 #ifndef BETRIEBSSYSTEME_MINISHELL_H
 #define BETRIEBSSYSTEME_MINISHELL_H
@@ -11,7 +16,10 @@
 #include <cstring>
 
 using namespace std;
-
+/**
+ * Implementierung einer Art mini Shell, welche Eingaben vom Benutzer
+ * einlesen kann, Prozesse ausfuehren kann und Variablen speichern kann.
+ */
 class MiniShell {
 public:
     MiniShell();
