@@ -108,11 +108,13 @@ void MiniShell::execute(char *line) {
     } else if (strcmp(args[0], "cd") == 0) {
         chdir(args[1]);
     } else if (strcmp(args[0], "showenv") == 0) {
-        char *env = getenv(args[1]);
-        if (env != nullptr) {
-            cout << env << endl;
-        } else {
-            cerr << "Variable nicht gefunden!" << endl;
+        char **s = environ;
+
+        int position = 0;
+
+        while(s[position] != nullptr){
+            cout << s[position] << endl;
+            position++;
         }
     } else if (strcmp(args[0], "export") == 0) {
         int err = putenv(args[1]);
