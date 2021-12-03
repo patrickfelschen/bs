@@ -213,7 +213,6 @@ void MiniShell::launchPipe(char **args1, char **args2) {
         // Kindprozess 1
         close(pipefd[0]); // Nicht verwendeten Deskriptor schliessen
         dup2(pipefd[1], STDOUT_FILENO); // Ausgabe per dup2() in Deskriptor 1 umleiten
-        close(pipefd[1]); // Deskriptor schliessen um Terminierung zu kennzeichnen
 
         if (execvp(args1[0], args1) < 0) {
             cerr << "Befehl 1 konnte nicht ausgefuehrt werden!" << endl;
@@ -232,14 +231,16 @@ void MiniShell::launchPipe(char **args1, char **args2) {
             // Kindprozess 2
             close(pipefd[1]); // Nicht verwendeten Deskriptor schliessen
             dup2(pipefd[0], STDIN_FILENO); // Eingabe per dup2() in Deskriptor 0 umleiten
-            close(pipefd[0]); // Deskriptor schliessen um Terminierung zu kennzeichnen
             if (execvp(args2[0], args2) < 0) {
                 cerr << "Befehl 2 konnte nicht ausgefuehrt werden" << endl;
                 exit(0);
             }
         } else {
             // Warten auf Beendigung der Child-Prozesse
-            wait(nullptr);
+            close(pipefd[0]); // Deskriptor schliessen um Terminierung zu kennzeichnen
+            close(pipefd[1]); // Deskriptor schliessen um Terminierung zu kennzeichnen
+            waitpid(p1, nullptr, 0);
+            waitpid(p2, nullptr, 0);
             return;
         }
     }
