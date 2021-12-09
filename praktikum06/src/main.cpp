@@ -11,6 +11,7 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
+    //// Argumente prüfen
     if (argv[1] == nullptr) {
         cerr << "Bitte Steuerdatei angeben." << endl;
         return -1;
@@ -26,30 +27,34 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    string url;
-    char **urls = new char *[20];
+    //// Argumente zwischenspeichern
+    char* fileName = argv[1];
+    unsigned int queueSize = stoi(argv[2]);
+    unsigned int threadCount = stoi(argv[3]);
 
-    //TODO: unsigned int queueSize = ((unsigned int)argv[2]);
-
-    ifstream inputFile(argv[1]);
+    //// Urls aus Datei einlesen
+    ifstream inputFile(fileName);
 
     if(!inputFile.is_open()){
-        cerr << "Datei " << argv[1] << " konnte nicht geöffnet werden." << endl;
+        cerr << "Datei " << fileName << " konnte nicht geöffnet werden." << endl;
         return -1;
     }
 
-    unsigned int i = 0;
+    string url;
+    char **urls = new char *[20];
 
+    unsigned int position = 0;
     while (getline(inputFile, url)) {
-        urls[i] = strdup(url.c_str());
-        printf("%s\n", urls[i]);
-        i++;
+        urls[position] = strdup(url.c_str());
+        printf("%s\n", urls[position]);
+        position++;
     }
 
-    //TODO:: Bot bot = Bot(urls, argv[2], argv[3]);
-    //TODO:: bot.start();
-
     inputFile.close();
+
+    //// Bot erzeugen
+    Bot bot = Bot(urls, queueSize, threadCount);
+    bot.start();
 
     return 0;
 }
