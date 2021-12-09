@@ -4,6 +4,10 @@
 
 #include "Bot.h"
 
+#define RED   "\x1B[31m"
+#define GRN   "\x1B[32m"
+#define YEL   "\x1B[33m"
+
 Bot::Bot(char **urls) {
     this->urls = urls;
 }
@@ -13,7 +17,7 @@ Bot::~Bot() {
 }
 
 void do_produce(char *url) {
-    printf("producer: produced %s.\n", url);
+    printf(GRN"producer: produced %s.\n", url);
     usleep(100000 + 100000);
 }
 
@@ -27,7 +31,7 @@ void *producer(void *q, char **urls) {
         unique_lock<mutex> lck(queue->mut);
         // while -> spinlock
         if (queue->isFull()) {
-            printf("producer: queue FULL.\n");
+            printf(YEL"producer: queue FULL.\n");
             queue->notFull.wait(lck);
         }
 
@@ -42,27 +46,29 @@ void *producer(void *q, char **urls) {
     return nullptr;
 }
 
-void do_consume(char *url) {
-    printf("consumer: consumed %s.\n", url);
-    usleep(200000 + 300000);
+void do_consume(char *url, int id) {
+    printf(RED"consumer (%i): consumed %s.\n", id, url);
+
+    webreq_download(url, url);
+
+    usleep(random()/1000);
 }
 
 /* Consumer */
 void *consumer(void *q) {
     Queue *queue = (Queue *) q;
     char *url;
-    int i;
 
-    for (i = 0; i < LOOP; i++) {
+    for (int i = 0; i < LOOP; i++) {
         unique_lock<mutex> lck(queue->mut);
         // while -> spinlock
         if (queue->isEmpty()) {
-            printf("consumer: queue EMPTY.\n");
+            printf(YEL"consumer: queue EMPTY.\n");
             queue->notEmpty.wait(lck);
         }
         queue->delItem(&url);
         queue->notFull.notify_one();
-        do_consume(url);
+        do_consume(url, i);
     }
 
     return nullptr;

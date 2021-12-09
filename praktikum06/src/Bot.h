@@ -8,6 +8,7 @@
 #define LOOP 20
 
 #include "Queue.h"
+#include "include/web_request.h"
 
 class Bot {
 public:
