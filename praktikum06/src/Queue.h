@@ -23,7 +23,6 @@ private:
     char* buf[QUEUESIZE];
     long head, tail;
     bool full, empty;
-    unsigned int size;
 public:
     std::mutex mut;
     std::condition_variable notFull, notEmpty;

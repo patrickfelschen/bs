@@ -4,7 +4,7 @@
 
 #include "Bot.h"
 
-Bot::Bot(char** urls) {
+Bot::Bot(char **urls) {
     this->urls = urls;
 }
 
@@ -12,64 +12,69 @@ Bot::~Bot() {
 
 }
 
-void do_produce(int item, int r)
-{
-    printf("producer: produced %d (round %d).\n", item, r);
-    usleep(100000 + r * 100000);
+void do_produce(char *url) {
+    printf("producer: produced %s.\n", url);
+    usleep(100000 + 100000);
 }
 
 /* Producer */
-void *producer(void *q) {
-    Queue * queue = (Queue *) q;
+void *producer(void *q, char **urls) {
+    Queue *queue = (Queue *) q;
 
-    for (int j = 0; j < 2; j++) {
-        for (int i = 0; i < LOOP; i++) {
-            unique_lock<std::mutex> lck(queue->mut);
-            // while -> spinlock
-            if (queue->isFull()) {
-                printf("producer: queue FULL.\n");
-                queue->notFull.wait(lck);
-            }
-            TODO: queue->addItem (i);
-            queue->notEmpty.notify_one();
+    unsigned int pos = 0;
+    while (urls[pos] != nullptr) {
+
+        unique_lock<mutex> lck(queue->mut);
+        // while -> spinlock
+        if (queue->isFull()) {
+            printf("producer: queue FULL.\n");
+            queue->notFull.wait(lck);
         }
+
+        queue->addItem(urls[pos]);
+        queue->notEmpty.notify_one();
+
+        do_produce(urls[pos]);
+
+        pos++;
     }
+
     return nullptr;
 }
 
-void do_consume(int item, int r)
-{
-    printf("consumer: consumed %d.\n", item);
-    usleep(200000 + r * 300000);
+void do_consume(char *url) {
+    printf("consumer: consumed %s.\n", url);
+    usleep(200000 + 300000);
 }
 
 /* Consumer */
 void *consumer(void *q) {
-    Queue *fifo;
-    int i, d;
-    int j;
+    Queue *queue = (Queue *) q;
+    char *url;
+    int i;
 
-    fifo = (Queue *) q;
-    for (j = 0; j < 2; j++) {
-        for (i = 0; i < LOOP; i++) {
-            unique_lock<std::mutex> lck(fifo->mut);
-            // while -> spinlock
-            if (fifo->isEmpty()) {
-                printf("consumer: queue EMPTY.\n");
-                fifo->notEmpty.wait(lck);
-            }
-            //TODO: fifo->delItem (&d);
-            fifo->notFull.notify_one();
-            do_consume (d, j);
+    for (i = 0; i < LOOP; i++) {
+        unique_lock<mutex> lck(queue->mut);
+        // while -> spinlock
+        if (queue->isEmpty()) {
+            printf("consumer: queue EMPTY.\n");
+            queue->notEmpty.wait(lck);
         }
+        queue->delItem(&url);
+        queue->notFull.notify_one();
+        do_consume(url);
     }
+
     return nullptr;
 }
 
 void Bot::start() {
-    Queue queue(queueSize);
+    Queue queue;
 
-    thread pro(producer, &queue);
+    // Reader Thread
+    thread pro(producer, &queue, urls);
+
+    // Client Threads
     thread con(consumer, &queue);
 
     pro.join();

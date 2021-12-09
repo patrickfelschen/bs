@@ -16,7 +16,7 @@ Queue::~Queue() {}
 void Queue::addItem(char *in) {
     buf[tail] = in;
     tail++;
-    if (tail == size)
+    if (tail == QUEUESIZE)
         tail = 0;
     if (tail == head)
         full = true;
@@ -26,7 +26,7 @@ void Queue::addItem(char *in) {
 void Queue::delItem(char **out) {
     *out = buf[head];
     head++;
-    if (head == size)
+    if (head == QUEUESIZE)
         head = 0;
     if (head == tail)
         empty = true;

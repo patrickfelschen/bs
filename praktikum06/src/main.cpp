@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     unsigned int position = 0;
     while (getline(inputFile, url)) {
         urls[position] = strdup(url.c_str());
-        printf("%s\n", urls[position]);
+        //printf("%s\n", urls[position]);
         position++;
     }
 
