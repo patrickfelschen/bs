@@ -92,7 +92,7 @@ void *producer(void *q) {
 
     for (int j = 0; j < 2; j++) {
         for (int i = 0; i < LOOP; i++) {
-            std::unique_lock<std::mutex> lck(fifo->mut);
+            unique_lock<std::mutex> lck(fifo->mut);
             // while -> spinlock
             if (fifo->isFull()) {
                 printf("producer: queue FULL.\n");
@@ -120,7 +120,7 @@ void *consumer(void *q) {
     fifo = (Queue *) q;
     for (j = 0; j < 2; j++) {
         for (i = 0; i < LOOP; i++) {
-            std::unique_lock<std::mutex> lck(fifo->mut);
+            unique_lock<std::mutex> lck(fifo->mut);
             // while -> spinlock
             if (fifo->isEmpty()) {
                 printf("consumer: queue EMPTY.\n");
