@@ -14,8 +14,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstring>
+#include <stdio.h>
 
 using namespace std;
+
+extern char **environ;
 /**
  * Implementierung einer Art mini Shell, welche Eingaben vom Benutzer
  * einlesen kann, Prozesse ausfuehren kann und Variablen speichern kann.
