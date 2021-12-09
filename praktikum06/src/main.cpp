@@ -17,20 +17,8 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    if (argv[2] == nullptr) {
-        cerr << "Bitte Queuegröße angeben." << endl;
-        return -1;
-    }
-
-    if (argv[3] == nullptr) {
-        cerr << "Bitte Threadanzahl angeben." << endl;
-        return -1;
-    }
-
     //// Argumente zwischenspeichern
     char* fileName = argv[1];
-    unsigned int queueSize = stoi(argv[2]);
-    unsigned int threadCount = stoi(argv[3]);
 
     //// Urls aus Datei einlesen
     ifstream inputFile(fileName);
@@ -53,7 +41,7 @@ int main(int argc, char **argv) {
     inputFile.close();
 
     //// Bot erzeugen
-    Bot bot = Bot(urls, queueSize, threadCount);
+    Bot bot = Bot(urls);
     bot.start();
 
     return 0;

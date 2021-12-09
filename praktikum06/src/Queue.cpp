@@ -4,9 +4,7 @@
 
 #include "Queue.h"
 
-Queue::Queue(unsigned int size) {
-    this->size = size;
-    buf = new char*[size];
+Queue::Queue() {
     empty = true;
     full = false;
     head = 0;

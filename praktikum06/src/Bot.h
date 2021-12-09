@@ -10,16 +10,12 @@
 #include "Queue.h"
 
 class Bot {
-private:
 public:
-    Bot(char** urls, unsigned int queueSize, unsigned int threadCount);
+    Bot(char** urls);
     virtual ~Bot();
     void start();
 private:
-    void do_produce(int item, int r);
-    void *producer(void *q);
-    void do_consume(int item, int r);
-    void *consumer(void *q);
+    char** urls;
 };
 
 

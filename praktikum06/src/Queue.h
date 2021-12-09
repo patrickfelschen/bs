@@ -5,6 +5,8 @@
 #ifndef BETRIEBSSYSTEME_QUEUE_H
 #define BETRIEBSSYSTEME_QUEUE_H
 
+#define QUEUESIZE 10
+
 #include <thread>
 #include <mutex>
 #include <atomic>
@@ -18,7 +20,7 @@ using namespace std;
 
 class Queue {
 private:
-    char** buf;
+    char* buf[QUEUESIZE];
     long head, tail;
     bool full, empty;
     unsigned int size;
@@ -26,7 +28,7 @@ public:
     std::mutex mut;
     std::condition_variable notFull, notEmpty;
 public:
-    Queue(unsigned int size);
+    Queue();
     virtual ~Queue();
     void addItem(char* in);
     void delItem(char** out);
