@@ -5,6 +5,7 @@
 #include "Queue.h"
 
 Queue::Queue() {
+    //TODO: eine sache extra?
     empty = true;
     full = false;
     head = 0;

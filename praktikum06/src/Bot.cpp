@@ -65,10 +65,12 @@ void do_consume(char *url, int id) {
 }
 
 /* Consumer */
+//TODO: struct mit queue und thread id
 void *consumer(void *q) {
     Queue *queue = (Queue *) q;
     char *url;
 
+    //TODO: for-schleife weg
     for (int i = 0; i < LOOP; i++) {
         unique_lock<mutex> lck(queue->mut);
         // while -> spinlock
@@ -87,12 +89,12 @@ void *consumer(void *q) {
 void Bot::start() {
     Queue queue;
 
-
     webreq_set_output_path("./output");
 
     // Reader Thread
     thread pro(producer, &queue, urls);
 
+    //TODO: Treads dynamisch mit einer schleife
     // Client Threads
     thread con(consumer, &queue);
 
