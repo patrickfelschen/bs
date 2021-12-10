@@ -9,6 +9,7 @@
 
 #include "Queue.h"
 #include "include/web_request.h"
+#include <cstring>
 
 class Bot {
 public:

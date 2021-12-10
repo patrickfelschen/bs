@@ -41,6 +41,8 @@ int main(int argc, char **argv) {
     inputFile.close();
 
     //// Bot erzeugen
+    webreq_init(argc, argv);
+
     Bot bot = Bot(urls);
     bot.start();
 

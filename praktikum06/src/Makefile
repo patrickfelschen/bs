@@ -5,6 +5,7 @@ SRCDIR     = ./
 CFLAGS     = -Wall -Werror -Wpedantic -g -I$(INCDIR)
 CPPFLAGS   = $(CFLAGS) -std=c++11
 LDFLAGS    = -lm -lssl -lcrypto -pthread /usr/lib/x86_64-linux-gnu/libcurl.so.4 #-lcurl
+OUTDIR	   = ./output
 
 # executables
 all: $(OBJFILES) | $(BIN_SIMPLE)
@@ -24,4 +25,4 @@ clean:
 	$(RM) $(BIN_SIMPLE)
 	$(RM) $(wildcard $(SRCDIR)*.o)
 	$(RM) $(wildcard $(LIBDIR)/*.o)
-	$(RM) *.html
+	$(RM) $(OUTDIR)/*.html

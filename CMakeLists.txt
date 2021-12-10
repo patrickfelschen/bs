@@ -4,10 +4,6 @@ project(Betriebssysteme)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS -pthread)
 
-find_package(CURL REQUIRED)
-
-include_directories(${CURL_INCLUDE_DIR})
-
 add_executable(praktikum04
         praktikum04/src/main.cpp
         praktikum04/src/MiniShell.h
@@ -27,6 +23,4 @@ add_executable(praktikum06
         praktikum06/src/Queue.cpp
         praktikum06/src/Queue.h
 )
-
-target_link_libraries(praktikum06 ${CURL_LIBRARIES})
 

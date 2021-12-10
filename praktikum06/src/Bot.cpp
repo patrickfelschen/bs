@@ -18,7 +18,7 @@ Bot::~Bot() {
 
 void do_produce(char *url) {
     printf(GRN"producer: produced %s.\n", url);
-    usleep(100000 + 100000);
+    //usleep(100000 + 100000);
 }
 
 /* Producer */
@@ -49,9 +49,19 @@ void *producer(void *q, char **urls) {
 void do_consume(char *url, int id) {
     printf(RED"consumer (%i): consumed %s.\n", id, url);
 
-    webreq_download(url, url);
+    // get domain for filename
+    char* urlCopy = strdup(url);
+    strtok(urlCopy, "/");
+    char* domain = strtok(nullptr, "/");
 
-    usleep(random()/1000);
+    char filename[64];
+    snprintf(filename, sizeof (filename), "%i_%s.html", id, domain);
+
+    int res = webreq_download(url, filename);
+
+    if(res != 200) {
+        printf("%s", webreq_error(res));
+    }
 }
 
 /* Consumer */
@@ -77,6 +87,9 @@ void *consumer(void *q) {
 void Bot::start() {
     Queue queue;
 
+
+    webreq_set_output_path("./output");
+
     // Reader Thread
     thread pro(producer, &queue, urls);
 
@@ -85,4 +98,6 @@ void Bot::start() {
 
     pro.join();
     con.join();
+
+    webreq_cleanup();
 }
