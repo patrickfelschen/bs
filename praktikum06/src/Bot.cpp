@@ -35,6 +35,7 @@ void *producer(void *q, char* fileName) {
 
 void do_consume(char *url, int id) {
 #ifdef __APPLE__
+    // for debug
     usleep(random() / 1000);
 #endif
 
@@ -79,7 +80,11 @@ void *consumer(void *q, int id) {
 }
 
 void Bot::start(char* fileName, int queueSize, int threadCount) {
-    std::thread threads[threadCount];
+    if(queueSize <= 0 || threadCount <= 0){
+        exit(-1);
+    }
+
+    std::thread* threads = new std::thread[threadCount];
     Queue queue(queueSize);
 
 #ifdef __linux__
@@ -92,8 +97,8 @@ void Bot::start(char* fileName, int queueSize, int threadCount) {
         threads[i] = std::thread(consumer, &queue, i);
     }
     pro.join();
-    for (std::thread &con: threads) {
-        con.join();
+    for (int i = 0; i < threadCount; i++) {
+        threads[i].join();
     }
 #ifdef __linux__
     webreq_cleanup();

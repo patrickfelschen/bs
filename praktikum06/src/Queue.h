@@ -5,7 +5,6 @@
 #ifndef BETRIEBSSYSTEME_QUEUE_H
 #define BETRIEBSSYSTEME_QUEUE_H
 
-
 #include <mutex>
 #include <condition_variable>
 
