@@ -73,8 +73,9 @@ void *consumer(void *q, int id) {
         }
         char* url;
         queue->delItem(&url);
-        queue->notFull.notify_all();
+        lock.unlock();
         do_consume(url, id);
+        queue->notFull.notify_one();
     }
 }
 
