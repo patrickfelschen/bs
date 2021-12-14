@@ -11,6 +11,8 @@
 #include <cstring>
 #include <sys/time.h>
 
+#include <sys/time.h>
+
 #include "Queue.h"
 
 

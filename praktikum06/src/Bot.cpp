@@ -93,7 +93,7 @@ void Bot::start(char* fileName, int queueSize, int threadCount) {
     std::thread pro(producer, &queue, fileName);
 
     struct timeval tv;
-    gettimeofday(&tv,NULL);
+    gettimeofday(&tv, nullptr);
     double startTime = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
 
     //// Client Threads
@@ -105,9 +105,9 @@ void Bot::start(char* fileName, int queueSize, int threadCount) {
         threads[i].join();
     }
 
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
     double endTime = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
-    printf("Dauer:%d\n", (int)(endTime - startTime));
+    printf("Dauer: %d\n", (int)(endTime - startTime));
 
     delete[] threads;
 #ifdef __linux__
