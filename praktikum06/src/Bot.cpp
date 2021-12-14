@@ -62,12 +62,12 @@ void *consumer(void *q, int id) {
     Queue *queue = (Queue *) q;
     while(true) {
         std::unique_lock<std::mutex> lock(queue->mutex);
-        //// Queue erreicht das Ende und ist leer
-        if(queue->isEnd() && queue->isEmpty()){
-            printf(YEL"consumer (%i): isEnd\n", id);
-            exit(0);
-        }
         while(queue->isEmpty()){
+            //// Queue erreicht das Ende und ist leer
+            if(queue->isEnd()) {
+                printf(YEL"consumer (%i): isEnd\n", id);
+                return nullptr;
+            }
             printf(YEL"consumer (%i): isEmpty\n", id);
             queue->notEmpty.wait(lock);
         }
@@ -76,7 +76,6 @@ void *consumer(void *q, int id) {
         queue->notFull.notify_all();
         do_consume(url, id);
     }
-    return nullptr;
 }
 
 void Bot::start(char* fileName, int queueSize, int threadCount) {
@@ -92,6 +91,11 @@ void Bot::start(char* fileName, int queueSize, int threadCount) {
 #endif
     //// Reader Thread
     std::thread pro(producer, &queue, fileName);
+
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    double startTime = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+
     //// Client Threads
     for (int i = 0; i < threadCount; i++) {
         threads[i] = std::thread(consumer, &queue, i);
@@ -100,6 +104,12 @@ void Bot::start(char* fileName, int queueSize, int threadCount) {
     for (int i = 0; i < threadCount; i++) {
         threads[i].join();
     }
+
+    gettimeofday(&tv, NULL);
+    double endTime = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+    printf("Dauer:%d\n", (int)(endTime - startTime));
+
+    delete[] threads;
 #ifdef __linux__
     webreq_cleanup();
 #endif

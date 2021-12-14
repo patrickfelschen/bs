@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <cstring>
+#include <sys/time.h>
 
 #include "Queue.h"
 
