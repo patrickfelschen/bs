@@ -8,98 +8,94 @@
 #define GRN   "\x1B[32m"
 #define YEL   "\x1B[33m"
 
-Bot::Bot(char **urls) {
-    this->urls = urls;
-}
+Bot::Bot() {}
 
-Bot::~Bot() {
-
-}
-
-void do_produce(char *url) {
-    printf(GRN"producer: produced %s.\n", url);
-    //usleep(100000 + 100000);
-}
+Bot::~Bot() {}
 
 /* Producer */
-void *producer(void *q, char **urls) {
+void *producer(void *q, char* fileName) {
     Queue *queue = (Queue *) q;
-
-    unsigned int pos = 0;
-    while (urls[pos] != nullptr) {
-
-        unique_lock<mutex> lck(queue->mut);
-        // while -> spinlock
-        if (queue->isFull()) {
-            printf(YEL"producer: queue FULL.\n");
-            queue->notFull.wait(lck);
+    //// Urls aus Datei einlesen
+    std::ifstream file(fileName);
+    std::string str;
+    while (std::getline(file, str)) {
+        std::unique_lock<std::mutex> lock(queue->mutex);
+        while(queue->isFull()){
+            queue->notFull.wait(lock);
         }
-
-        queue->addItem(urls[pos]);
-        queue->notEmpty.notify_one();
-
-        do_produce(urls[pos]);
-
-        pos++;
+        char *cstr = new char[str.length() + 1];
+        strcpy(cstr, str.c_str());
+        queue->addItem(cstr);
+        printf(GRN"producer: %s\n", cstr);
+        queue->notEmpty.notify_all();
     }
-
+    queue->setEnd(true);
     return nullptr;
 }
 
 void do_consume(char *url, int id) {
-    printf(RED"consumer (%i): consumed %s.\n", id, url);
+#ifdef __APPLE__
+    usleep(random() / 1000);
+#endif
 
+#ifdef __linux__
     // get domain for filename
-    char* urlCopy = strdup(url);
+    char *urlCopy = strdup(url);
     strtok(urlCopy, "/");
-    char* domain = strtok(nullptr, "/");
+    char *domain = strtok(nullptr, "/");
 
     char filename[64];
-    snprintf(filename, sizeof (filename), "%i_%s.html", id, domain);
+    snprintf(filename, sizeof(filename), "%i_%s.html", id, domain);
 
     int res = webreq_download(url, filename);
 
     if(res != 200) {
         printf("%s", webreq_error(res));
     }
+#endif
+    printf(RED"consumer (%i): consumed %s\n", id, url);
 }
 
 /* Consumer */
-//TODO: struct mit queue und thread id
-void *consumer(void *q) {
+void *consumer(void *q, int id) {
     Queue *queue = (Queue *) q;
-    char *url;
-
-    //TODO: for-schleife weg
-    for (int i = 0; i < LOOP; i++) {
-        unique_lock<mutex> lck(queue->mut);
-        // while -> spinlock
-        if (queue->isEmpty()) {
-            printf(YEL"consumer: queue EMPTY.\n");
-            queue->notEmpty.wait(lck);
+    while(true) {
+        std::unique_lock<std::mutex> lock(queue->mutex);
+        //// Queue erreicht das Ende und ist leer
+        if(queue->isEnd() && queue->isEmpty()){
+            printf(YEL"consumer (%i): isEnd\n", id);
+            exit(0);
         }
+        while(queue->isEmpty()){
+            printf(YEL"consumer (%i): isEmpty\n", id);
+            queue->notEmpty.wait(lock);
+        }
+        char* url;
         queue->delItem(&url);
-        queue->notFull.notify_one();
-        do_consume(url, i);
+        queue->notFull.notify_all();
+        do_consume(url, id);
     }
-
     return nullptr;
 }
 
-void Bot::start() {
-    Queue queue;
+void Bot::start(char* fileName, int queueSize, int threadCount) {
+    std::thread threads[threadCount];
+    Queue queue(queueSize);
 
+#ifdef __linux__
     webreq_set_output_path("./output");
-
-    // Reader Thread
-    thread pro(producer, &queue, urls);
-
-    //TODO: Treads dynamisch mit einer schleife
-    // Client Threads
-    thread con(consumer, &queue);
-
+#endif
+    //// Reader Thread
+    std::thread pro(producer, &queue, fileName);
+    //// Client Threads
+    for (int i = 0; i < threadCount; i++) {
+        threads[i] = std::thread(consumer, &queue, i);
+    }
     pro.join();
-    con.join();
-
+    for (std::thread &con: threads) {
+        con.join();
+    }
+#ifdef __linux__
     webreq_cleanup();
+#endif
 }

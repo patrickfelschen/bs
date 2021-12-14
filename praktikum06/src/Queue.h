@@ -5,35 +5,28 @@
 #ifndef BETRIEBSSYSTEME_QUEUE_H
 #define BETRIEBSSYSTEME_QUEUE_H
 
-#define QUEUESIZE 10
 
-#include <thread>
 #include <mutex>
-#include <atomic>
 #include <condition_variable>
-
-#include <cstdio>
-#include <unistd.h>
-#include <cstdlib>
-
-using namespace std;
 
 class Queue {
 private:
-    char* buf[QUEUESIZE];
+    char** buf;
+    int size;
     long head, tail;
-    bool full, empty;
+    bool full, empty, end;
 public:
-    std::mutex mut;
-    std::condition_variable notFull, notEmpty;
+    std::mutex mutex;
+    std::condition_variable notEmpty, notFull;
 public:
-    Queue();
+    Queue(int queueSize);
     virtual ~Queue();
     void addItem(char* in);
     void delItem(char** out);
-    bool isFull() const { return full; }
-    bool isEmpty() const { return empty; }
+    void setEnd(bool end);
+    bool isEnd() const;
+    bool isFull() const;
+    bool isEmpty() const;
 };
-
 
 #endif //BETRIEBSSYSTEME_QUEUE_H

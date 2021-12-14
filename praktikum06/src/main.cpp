@@ -3,8 +3,6 @@
 //
 
 #include <iostream>
-#include <fstream>
-#include <cstring>
 #include "Bot.h"
 
 using namespace std;
@@ -17,34 +15,28 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    //// Argumente zwischenspeichern
-    char* fileName = argv[1];
-
-    //// Urls aus Datei einlesen
-    ifstream inputFile(fileName);
-
-    if(!inputFile.is_open()){
-        cerr << "Datei " << fileName << " konnte nicht geöffnet werden." << endl;
+    if (argv[2] == nullptr) {
+        cerr << "Bitte Queuegröße angeben." << endl;
         return -1;
     }
 
-    string url;
-    char **urls = new char *[20];
-
-    unsigned int position = 0;
-    while (getline(inputFile, url)) {
-        urls[position] = strdup(url.c_str());
-        //printf("%s\n", urls[position]);
-        position++;
+    if (argv[3] == nullptr) {
+        cerr << "Bitte Threadanzahl angeben." << endl;
+        return -1;
     }
 
-    inputFile.close();
+    //// Argumente zwischenspeichern
+    char* fileName = argv[1];
+    int queueSize = stoi(argv[2]);
+    int threadCount = stoi(argv[3]);
 
     //// Bot erzeugen
-    webreq_init(argc, argv);
+    #ifdef __linux__
+        webreq_init(argc, argv);
+    #endif
 
-    Bot bot = Bot(urls);
-    bot.start();
+    Bot bot = Bot();
+    bot.start(fileName, queueSize, threadCount);
 
     return 0;
 }

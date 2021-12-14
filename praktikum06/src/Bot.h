@@ -5,19 +5,24 @@
 #ifndef BETRIEBSSYSTEME_BOT_H
 #define BETRIEBSSYSTEME_BOT_H
 
-#define LOOP 20
+#include <thread>
+#include <unistd.h>
+#include <fstream>
+#include <cstring>
 
 #include "Queue.h"
+
+
+#ifdef __linux__
 #include "include/web_request.h"
-#include <cstring>
+#endif
+
 
 class Bot {
 public:
-    Bot(char** urls);
+    Bot();
     virtual ~Bot();
-    void start();
-private:
-    char** urls;
+    void start(char* fileName, int queueSize, int threadCount);
 };
 
 
