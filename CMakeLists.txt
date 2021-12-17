@@ -25,4 +25,6 @@ add_executable(praktikum06
 
 add_executable(praktikum07
         praktikum07/src/main.cpp
+        praktikum07/src/ListDir.cpp
+        praktikum07/src/ListDir.h
 )
