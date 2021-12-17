@@ -23,3 +23,6 @@ add_executable(praktikum06
         praktikum06/src/Queue.h
 )
 
+add_executable(praktikum07
+        praktikum07/src/main.cpp
+)
