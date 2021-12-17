@@ -1,15 +1,30 @@
 //
 // Created by pfelsche@id.hsos.de on 17.12.21.
 //
-
 #include <unistd.h>
+#include <iostream>
 
-#include <string.h>
+using namespace std;
 
 int main(int argc, char** argv) {
-    int opt = getopt(argc, argv, ":goal");
-
-    if(strcmp(optarg, "g") != 0){
-
+    cout << argv[1] << endl;
+    while (true) {
+        switch(getopt(argc,argv, "aglo")) {
+            case 'a':
+                cout << "Parameter -a" << endl;
+                continue;
+            case 'g':
+                cout << "Parameter -g" << endl;
+                continue;
+            case 'l':
+                cout << "Parameter -l" << endl;
+                continue;
+            case 'o':
+                cout << "Parameter -o" << endl;
+                continue;
+            case -1:
+                break;
+        }
+        return 0;
     }
 }
