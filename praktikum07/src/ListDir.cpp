@@ -4,6 +4,9 @@
 #include "ListDir.h"
 #include <ctime>
 #include <unistd.h>
+#include <cstring>
+#include <grp.h>
+#include <pwd.h>
 
 ListDir::ListDir() {
     showAll = false;
@@ -24,7 +27,7 @@ void ListDir::printResult() {
         char *path = files->d_name;
         stat(path, &buf);
         // Ueberspringe Datei, wenn -a nicht angegeben ist und Datei versteckt
-        if (!showAll && path[0] == '.') {
+        if(!showAll && path[0] == '.'){
             files = readdir(currentDir);
             continue;
         }
