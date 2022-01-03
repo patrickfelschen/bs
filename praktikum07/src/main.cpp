@@ -7,31 +7,52 @@
 
 using namespace std;
 
-int main(int argc, char** argv) {
-    cout << argv[1] << endl;
+int main(int argc, char **argv) {
 
-    ListDir listDir(argv[1]);
-    listDir.printDir();
+    ListDir listDir;
 
-    while (true) {
-        switch(getopt(argc,argv, "aglo")) {
+    int c;
+    while ((c = getopt(argc, argv, "aglo")) != -1) {
+        switch (c) {
             case 'a':
-                //// Alle Verzeichnisse und Dateien inkl. versteckte
-                cout << "Parameter -a" << endl;
-                continue;
+                //cout << "-a" << endl;
+                listDir.setShowAll(true);
+                break;
             case 'g':
-                ////
-                cout << "Parameter -g" << endl;
-                continue;
+                //cout << "-g" << endl;
+                listDir.setShowLongFormat(true);
+                listDir.setShowOwner(false);
+                break;
             case 'l':
-                cout << "Parameter -l" << endl;
-                continue;
+                //cout << "-l" << endl;
+                listDir.setShowLongFormat(true);
+                listDir.setShowGroup(true);
+                listDir.setShowOwner(true);
+                break;
             case 'o':
-                cout << "Parameter -o" << endl;
-                continue;
-            case -1:
+                //cout << "-o" << endl;
+                listDir.setShowLongFormat(true);
+                listDir.setShowGroup(false);
+                break;
+            default:
+                cout << "-a\tEintraege, die mit . beginnen nicht verstecken" << endl;
+                cout << "-g\twie -l aber Eigentuemer nicht auflisten" << endl;
+                cout << "-l\tlanges Listenformat verwenden" << endl;
+                cout << "-o\twie -l aber ohne Gruppen-Informationen" << endl;
                 break;
         }
-        return 0;
     }
+
+    char *directory;
+
+    if (optind < argc) {
+        directory = argv[optind];
+    } else {
+        directory = ".";
+    }
+
+    listDir.setDir(directory);
+    listDir.printResult();
+
+    return 0;
 }

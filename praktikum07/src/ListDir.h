@@ -1,7 +1,6 @@
 //
-// Created by pfelsche@id.hsos.de on 17.12.21.
+// Created by patrickfelschen on 17.12.21.
 //
-
 #ifndef BETRIEBSSYSTEME_LISTDIR_H
 #define BETRIEBSSYSTEME_LISTDIR_H
 
@@ -12,10 +11,20 @@
 class ListDir {
 private:
     char* dir;
+    bool showAll;
+    bool showOwner;
+    bool showLongFormat;
+    bool showGroup;
+
 public:
-    ListDir(char* dir);
+    ListDir();
     virtual ~ListDir();
-    void printDir();
+    void printResult();
+    void setDir(char *dir);
+    void setShowAll(bool showAll);
+    void setShowOwner(bool showOwner);
+    void setShowLongFormat(bool showLongFormat);
+    void setShowGroup(bool showGroup);
 };
 
 
