@@ -4,6 +4,8 @@
 #include "ListDir.h"
 #include <ctime>
 #include <cstring>
+#include <cerrno>
+
 #ifdef __linux__
 #include <grp.h>
 #include <pwd.h>
@@ -21,17 +23,27 @@ ListDir::~ListDir() {}
 void ListDir::printResult() {
     DIR *currentDir;
     struct dirent *files;
+    errno = 0;
     currentDir = opendir(dir);
-    files = readdir(currentDir);
+    if (errno != 0) {
+        printf("%s \n", strerror(errno));
+        return;
+    }
+    errno = 0;
     struct stat buf;
-    while (files) {
+    unsigned int fileCounter = 0;
+    while ((files = readdir(currentDir))) {
+        if (errno != 0) {
+            printf("%s \n", strerror(errno));
+            continue;
+        }
         char *path = files->d_name;
         stat(path, &buf);
         // Ueberspringe Datei, wenn -a nicht angegeben ist und Datei versteckt
-        if(!showAll && path[0] == '.'){
-            files = readdir(currentDir);
+        if (!showAll && path[0] == '.') {
             continue;
         }
+
         if (showLongFormat) {
             // Dateityp
             printf((S_ISDIR(buf.st_mode)) ? "d" : "-");
@@ -64,7 +76,6 @@ void ListDir::printResult() {
 #else
                 printf("%-2i ", buf.st_gid);
 #endif
-
             }
             // Dateigroeße
             printf("%-10i ", buf.st_size);
@@ -73,12 +84,21 @@ void ListDir::printResult() {
             printf("%s ", time);
             // Name
             printf("%-10s \n", files->d_name);
+            fileCounter++;
         } else {
             printf("%s ", files->d_name);
         }
-        files = readdir(currentDir);
     }
+
+    if(showLongFormat){
+        printf("insgesamt: %i\n", fileCounter);
+    }
+
+    errno = 0;
     closedir(currentDir);
+    if (errno != 0) {
+        printf("%s \n", strerror(errno));
+    }
 }
 
 void ListDir::setShowAll(bool showAll) {
