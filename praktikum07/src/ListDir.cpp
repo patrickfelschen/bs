@@ -3,10 +3,11 @@
 //
 #include "ListDir.h"
 #include <ctime>
-#include <unistd.h>
 #include <cstring>
+#ifdef __linux__
 #include <grp.h>
 #include <pwd.h>
+#endif
 
 ListDir::ListDir() {
     showAll = false;
