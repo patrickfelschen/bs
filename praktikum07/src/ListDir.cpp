@@ -37,7 +37,7 @@ void ListDir::printResult() {
             printf("%s \n", strerror(errno));
             continue;
         }
-        char *path = files->d_name;
+            char *path = files->d_name;
         stat(path, &buf);
         // Ueberspringe Datei, wenn -a nicht angegeben ist und Datei versteckt
         if (!showAll && path[0] == '.') {
@@ -99,6 +99,7 @@ void ListDir::printResult() {
     if (errno != 0) {
         printf("%s \n", strerror(errno));
     }
+    printf("\n");
 }
 
 void ListDir::setShowAll(bool showAll) {
