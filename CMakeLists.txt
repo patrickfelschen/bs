@@ -23,8 +23,13 @@ add_executable(praktikum06
         praktikum06/src/Queue.h
 )
 
-add_executable(myls
+add_executable(praktikum07
         praktikum07/src/main.cpp
         praktikum07/src/ListDir.cpp
         praktikum07/src/ListDir.h
 )
+
+add_executable(praktikum08
+        praktikum08/src/main.cpp
+)
+
