@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
         long modeDec = octalToDecimal(modeOct);
         long mtimeOct = atol(tarBuf.mtime);
         time_t mTimeDec = octalToDecimal(mtimeOct);
-        char* date = strtok(ctime(&mTimeDec), "\n");
+        char mTimeFormated[17];
+        strftime(mTimeFormated, sizeof(mTimeFormated), "%Y-%m-%d %H:%M", localtime(&mTimeDec));
         //// PRINT FILE HEADER ////
         printConsole(tarBuf.typeflag == DIRTYPE ? "d" : "-");
         printConsole(modeDec & TUREAD ? "r" : "-");
@@ -60,7 +61,7 @@ int main(int argc, char **argv) {
         printConsole("\t");
         printConsole(std::to_string(sizeDec).c_str());
         printConsole("\t");
-        printConsole(date);
+        printConsole(mTimeFormated);
         printConsole("\t");
         printConsole(tarBuf.name);
         printConsole("\n");
