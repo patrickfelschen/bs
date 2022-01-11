@@ -15,13 +15,14 @@
 
 long octalToDecimal(long octalNumber);
 void printConsole(const char* s);
+void printError(const char* s);
 
 int main(int argc, char **argv) {
     //// OPEN FILE ////
     errno = 0;
     int fd = open(argv[1], O_RDONLY);
     if (errno != 0) {
-        printConsole(strerror(errno));
+        printError(strerror(errno));
         return EXIT_FAILURE;
     }
     TARHeader tarBuf;
@@ -30,7 +31,7 @@ int main(int argc, char **argv) {
         if(strlen(tarBuf.name) == 0) continue;
         //// CHECK FILE HEADER ////
         if (memcmp(tarBuf.magic, TMAGIC, strlen(TMAGIC)) != 0) {
-            printConsole("Not a TAR-Archive.");
+            printError("Not a TAR-Archive.");
             return EXIT_FAILURE;
         }
         long sizeOct = atol(tarBuf.size);
@@ -55,9 +56,9 @@ int main(int argc, char **argv) {
         printConsole(modeDec & TOWRITE ? "w" : "-");
         printConsole(modeDec & TOEXEC ? "x" : "-");
         printConsole("\t");
-        printConsole(tarBuf.uname);
+        printConsole(strlen(tarBuf.uname) == 0 ? "0" : tarBuf.uname);
         printConsole("/");
-        printConsole(tarBuf.gname);
+        printConsole(strlen(tarBuf.gname) == 0 ? "0" : tarBuf.gname);
         printConsole("\t");
         printConsole(std::to_string(sizeDec).c_str());
         printConsole("\t");
@@ -69,7 +70,7 @@ int main(int argc, char **argv) {
         //// REPOSITION THE FILE OFFSET ////
         lseek(fd, segSize, SEEK_CUR);
         if (errno != 0) {
-            printf("%s \n", strerror(errno));
+            printError(strerror(errno));
             return EXIT_FAILURE;
         }
     }
@@ -77,7 +78,7 @@ int main(int argc, char **argv) {
     errno = 0;
     close(fd);
     if (errno != 0) {
-        printConsole(strerror(errno));
+        printError(strerror(errno));
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
@@ -97,4 +98,8 @@ long octalToDecimal(long octalNumber) {
 
 void printConsole(const char* s) {
     write(STDOUT_FILENO, s, strlen(s));
+}
+
+void printError(const char* s) {
+    write(STDERR_FILENO, s, strlen(s));
 }
