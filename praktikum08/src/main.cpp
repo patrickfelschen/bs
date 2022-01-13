@@ -19,6 +19,10 @@ void printError(const char* s);
 
 int main(int argc, char **argv) {
     //// OPEN FILE ////
+    if(argv[1] == nullptr){
+        printError("Bitte Archiv angeben.");
+        return EXIT_FAILURE;
+    }
     errno = 0;
     int fd = open(argv[1], O_RDONLY);
     if (errno != 0) {
@@ -102,4 +106,5 @@ void printConsole(const char* s) {
 
 void printError(const char* s) {
     write(STDERR_FILENO, s, strlen(s));
+    write(STDERR_FILENO, "\n", strlen("\n"));
 }
